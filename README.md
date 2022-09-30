@@ -2,6 +2,9 @@
 TD2 - Blockchain Programming 2022/2023
 RODRIGUES Thomas & SIROT Antoine
 
+## Infos Utilisation
+Afin d'utiliser le code Python il suffit d'écrire la commande : "python td2_bitcoin.py"
+
 ## BIP 39 
 Dans cette partie nous allons suivre les étapes ci-dessous afin de créer et afficher une seed en mnémonique voire d'en importer une.
 
