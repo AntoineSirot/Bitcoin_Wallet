@@ -2,6 +2,10 @@ import secrets
 import hashlib
 import binascii
 import sys
+import codecs
+#!pip install ecdsa
+import ecdsa
+
 
 
 
@@ -28,15 +32,20 @@ def byte_to_binary(b: bytes, size: int) -> str:
     bin_n = bin(int.from_bytes(b, byteorder='big'))[2:]
     return padd_binary(bin_n, size)
 
+#### MAIN ####
 Liste = {}
 Liste[0] = "Créer nombre aléatoire pour Seed en base 10, en Binaire et en mnémonique"
 Liste[1] = "Créer autre chose"
 Liste[2] = "Jcp"
 print(Liste)
 a = int(input())
+
+### MENU ###
 if a==0 :
+  # CREATION ENTIER ALEATOIRE #
   print("Bien joue")
   seed = secrets.token_bytes(16)
+  # CONVERSION DE LA SEED EN BINAIRE #
   binSeed = byte_to_binary(seed,128)
   print("Valeur de la seed en binaire : " + binSeed)
   print("Valeur de la seed en base 10 : " + str(int(binSeed,2)))
@@ -51,6 +60,7 @@ if a==0 :
     Splited[j] = EntCheck[11*j:(j+1)*11]
   print(Splited)
 
+  # DICTIONNAIRE BIP39
   bip39wordlist = [ "abandon",  "ability",  "able",     "about",    "above",    "absent",   "absorb",   "abstract", 
       "absurd",   "abuse",    "access",   "accident", "account",  "accuse",   "achieve",  "acid",     
       "acoustic", "acquire",  "across",   "act",      "action",   "actor",    "actress",  "actual",   
@@ -309,7 +319,7 @@ if a==0 :
       "yellow",   "you",      "young",    "youth",    "zebra",    "zero",     "zone",     "zoo"  ]
 
    
-
+  # ATTRIBUTION DES MOTS #
   j = 0
   for i in Splited :
       Splited[j] = int(Splited[j],2)
@@ -320,7 +330,33 @@ if a==0 :
   print(word_string)
 
 
+  # EXTRACTION DE LA MASTER PRIVATE KEY ET DU CHAIN CODE #
+  hashSha512 = hashlib.sha512( word_string.encode("utf-8") ).hexdigest()
+  print("Hash Sha512 : " + hashSha512)
+  masterprivatekey = hashSha512[0:len(hashSha512)//2]
+  print("Master private key : " + masterprivatekey)
+  chaincode = hashSha512[len(hashSha512)//2:]
+  print("Chain Code : " + chaincode)
 
+
+  # EXCTRACTION DE LA MASTER PUBLIC KEY #
+  # Hex decoding the private key to bytes using codecs library
+  private_key_bytes = codecs.decode(masterprivatekey, 'hex')
+  # Generating a public key in bytes using SECP256k1 & ecdsa library
+  public_key_raw = ecdsa.SigningKey.from_string(private_key_bytes, curve=ecdsa.SECP256k1).verifying_key
+  public_key_bytes = public_key_raw.to_string()
+  # Hex encoding the public key from bytes
+  public_key_hex = codecs.encode(public_key_bytes, 'hex')
+  # Bitcoin public key begins with bytes 0x04 so we have to add the bytes at the start
+  public_key = (b'04' + public_key_hex).decode("utf-8")
+  # Checking if the last byte is odd or even
+  if (ord(bytearray.fromhex(public_key[-2:])) % 2 == 0):
+      public_key_compressed = '02'
+  else:
+      public_key_compressed = '03'
+      
+  public_key_compressed += public_key[2:66]
+  print("Master public key compressed : " + public_key_compressed)
   
 
 
