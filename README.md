@@ -43,7 +43,7 @@ Dans cette partie nous allons générer des clés enfants à différents index e
 
 * Extraction de la master private key et du chain code:
 
-Nous avons tout dabord encoder le mnémonique avec Sha512 pour récupérer le hash total, puis nous l'avons séparé en deux pour obtenir la master provate key (la partie gauche du hash) ainsi que le chain code (la partie droite).
+Nous avons tout d'abord encoder le mnémonique avec Sha512 pour récupérer le hash total, puis nous l'avons séparé en deux pour obtenir la master private key (la partie gauche du hash) ainsi que le chain code (la partie droite du hash).
 
 Nous avons vérifié si notre valeur du hachage de la phrase mnemonique, obtenue par Sha512 était la bonne grâce au site https://sha512.online:
 
@@ -59,13 +59,13 @@ Pour extraire la master public key, on commence par décoder la clé privée en 
 
 * Génération d'une clé enfant:
 
-Nous encodons la public key parent, le chaincode et l'index avec Sha512
+Nous encodons la public key parent, le chaincode avec Sha512
 
 <img width="1300" alt="cap code6" src="https://user-images.githubusercontent.com/113580716/193613760-cff697e7-08a3-4650-9877-41e80afc7e50.PNG" title="hover text">
 
 * Génération d'une clé enfant à l'index N:
 
-
+Afin d'encoder une clé enfant à un index précis nous ajoutons l'index voulu codé sur 32 bits en binaire dans le hash du Sha512 
 
 <img width="1300" alt="cap code7" src="https://user-images.githubusercontent.com/113580716/193613801-4461b05d-30f7-49f4-8552-499f59f0586f.PNG" title="hover text">
 
